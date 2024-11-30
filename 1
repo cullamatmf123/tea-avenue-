@@ -1,0 +1,396 @@
+<?php
+// Start the session
+session_start();
+
+// Database connection
+$conn = new mysqli("localhost", "root", "", "milk_tea_shop");
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Fetch products from the database
+$sql = "SELECT * FROM products";
+$result = $conn->query($sql);
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tea Avenue - Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: white;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Navigation Styles */
+        nav {
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: white;
+            border: none;
+            box-shadow: none;
+        }
+
+        nav h1 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 0;
+            color: #444;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #444;
+            font-weight: bold;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #888;
+        }
+
+        .home-btn {
+            padding: 8px 15px;
+            border-radius: 20px;
+            background-color: #e0e0e0;
+            color: #333;
+            font-weight: bold;
+            border: none;
+            transition: background-color 0.3s;
+        }
+
+        .home-btn:hover {
+            background-color: #d0d0d0;
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            text-align: center;
+            padding: 220px 20px;
+            background-color: #ffffff;
+        }
+
+        .welcome-section h2 {
+            font-size: 2.5rem;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        .welcome-section p {
+            font-size: 1.2rem;
+            color: #555;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            padding: 12px 25px;
+            margin-top: 20px;
+            background-color: #6c63ff;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 30px;
+            transition: background-color 0.3s ease;
+        }
+
+        .cta-btn:hover {
+            background-color: #5545d6;
+        }
+
+        /* Menu Section */
+        .menu-section {
+            padding: 150px 20px;
+            background-color: white;
+        }
+
+        .menu-section h2 {
+            font-size: 2rem;
+            color: #444;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .menu-items {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .menu-card {
+            width: 250px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .menu-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .menu-card h5 {
+            font-size: 1.2rem;
+            color: #333;
+            margin: 0 0 10px;
+        }
+
+        .menu-card p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .view-btn {
+            margin-top: 10px;
+            padding: 8px 15px;
+            background-color: #6c63ff;
+            color: white;
+            font-size: 0.9rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .view-btn:hover {
+            background-color: #5545d6;
+        }
+
+        footer {
+            background-color: #444;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            margin-top: auto;
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        /* About Us Section */
+        .about-us-section {
+            text-align: center;
+            padding: 50px 20px;
+            background-color: white;
+        }
+
+        .about-us-section h2 {
+            font-size: 2rem;
+            color: #444;
+        }
+
+        .about-us-section p {
+            font-size: 1rem;
+            color: #555;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+
+        /* Contact Us Section */
+        .contact-us-section {
+            padding: 50px 20px;
+            background-color: white; /* White background for Contact Us section */
+            text-align: center;
+        }
+
+        .contact-us-section h2 {
+            font-size: 2rem;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        .contact-us-section p {
+            font-size: 1rem;
+            color: #555;
+            max-width: 600px;
+            margin: 10px auto;
+        }
+
+        .contact-us-section ul {
+            list-style: none;
+            padding: 0;
+            font-size: 1rem;
+            color: #555;
+            margin: 20px auto;
+        }
+
+        .contact-us-section ul li {
+            margin: 5px 0;
+        }
+
+        .contact-us-section ul li a {
+            text-decoration: none;
+            color: #6c63ff;
+        }
+
+        .contact-us-section ul li a:hover {
+            text-decoration: underline;
+            color: #5545d6;
+        }
+
+        .social-links a {
+            text-decoration: none;
+            color: #6c63ff;
+            margin: 0 10px;
+        }
+
+        .social-links a:hover {
+            color: #5545d6;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <h1>Tea Avenue</h1>
+        <div>
+            <a href="index.php" class="home-btn">Home</a>
+            <a href="menu.php">Menu</a>
+            <a href="cart.php">Cart</a>
+            <?php if (isset($_SESSION['username']) && !empty($_SESSION['username'])): ?>
+                <a href="logout.php" class="ms-3">Hello, <?php echo htmlspecialchars($_SESSION['username']); ?></a>
+            <?php else: ?>
+                <a href="login.php" class="ms-3">Login</a> / <a href="register.php">Register</a>
+            <?php endif; ?>
+        </div>
+    </nav>
+
+    <!-- Welcome Section -->
+    <section class="welcome-section">
+        <h2>Welcome to Tea Avenue!</h2>
+        <p>Explore the best milk tea flavors in town. Crafted with love for tea lovers like you.</p>
+        <a href="menu.php" class="cta-btn">Explore Our Menu</a>
+    </section>
+
+    <!-- Our Menu Section -->
+    <section class="menu-section">
+        <h2>Milk Tea Menu</h2>
+        <div class="menu-items">
+            <?php if ($result->num_rows > 0): ?>
+                <?php while ($row = $result->fetch_assoc()): ?>
+                    <div class="menu-card">
+                        <?php if (isset($row['image'])): ?>
+                            <img src="<?php echo htmlspecialchars($row['image']); ?>" alt="<?php echo htmlspecialchars($row['product_name']); ?>">
+                        <?php else: ?>
+                            <img src="default-image.jpg" alt="Default Image">
+                        <?php endif; ?>
+                        <h5><?php echo isset($row['product_name']) ? htmlspecialchars($row['product_name']) : 'No name available'; ?></h5>
+                        <p><?php echo isset($row['description']) ? htmlspecialchars($row['description']) : 'No description available'; ?></p>
+                        <a href="view.php?id=<?php echo $row['id']; ?>" class="view-btn">View</a>
+                    </div>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <p>No products found.</p>
+            <?php endif; ?>
+        </div>
+    </section>
+<!-- About Us Section -->
+<section class="about-us-section">
+    <h2>About Us</h2>
+    <p>
+        Tea Avenue is dedicated to serving the finest quality milk tea to our customers. Each cup is a testament to our commitment to excellence and passion for tea-making. We source only the best ingredients to ensure an unparalleled tea experience.
+    </p>
+</section>
+
+<style>
+    /* Adjust About Us Section */
+    .about-us-section h2 {
+        font-size: 2.5rem; /* Increase font size for the heading */
+    }
+
+    .about-us-section p {
+        font-size: 1.5rem; /* Increase font size for the paragraph */
+        color: #555;
+        max-width: 800px;
+        margin: 20px auto;
+    }
+</style>
+
+<!-- Contact Us Section -->
+<section class="contact-us-section" id="contact">
+    <h2>Contact Us</h2>
+    <p>We'd love to hear from you! Reach out to us through the following ways:</p>
+    <ul>
+        <li>Email: <a href="mailto:contact@teaavenue.com">contact@teaavenue.com</a></li>
+        <li>Phone: +1 234 567 890</li>
+        <li>Address: 123 Tea Avenue, Cityville</li>
+    </ul>
+    <p>Follow us on social media for the latest updates and special offers:</p>
+    <div class="social-links">
+        <a href="#" target="_blank">Facebook</a> | <a href="#" target="_blank">Instagram</a> | <a href="#" target="_blank">Twitter</a>
+    </div>
+</section>
+
+<style>
+    /* Adjust Contact Us Section font size */
+    .contact-us-section h2 {
+        font-size: 2.5rem; /* Larger heading font size */
+    }
+
+    .contact-us-section p {
+        font-size: 1.5rem; /* Larger paragraph font size */
+        color: #555;
+    }
+
+    .contact-us-section ul {
+        font-size: 1.3rem; /* Larger font size for the list */
+    }
+
+    .contact-us-section .social-links a {
+        font-size: 1.3rem; /* Larger font size for social links */
+    }
+
+    /* Add more margin to move Contact Us section further down */
+    .contact-us-section {
+        margin-top: 400px; /* Increased value to move it further down */
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Tea Avenue. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
+
+<?php
+$conn->close();
+?>
